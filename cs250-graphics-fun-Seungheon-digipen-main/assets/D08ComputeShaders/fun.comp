@@ -1,0 +1,49 @@
+#version 430 core
+/**
+ * \file fun.comp
+ * \author Seungheon Jeon
+ * \date 2024 Spring
+ * \par CS250 Computer Graphics II
+ * \copyright DigiPen Institute of Technology
+ */
+uniform float uTime;
+layout(binding = 0, rgba8) uniform image2D output_image;
+layout(binding = 2, rgba8) uniform image2D input_image;
+
+layout (local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+float random2d(vec2 coord){
+    return fract(sin(dot(coord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+void main()
+{
+    vec4 duck = vec4(0);
+    vec2 input_center = vec2(imageSize(input_image)) / 2.0 ;
+    vec2 center = vec2(imageSize(output_image)) / 2.0 ;
+    mat2 rotationMatrix = mat2(cos(uTime), -sin(uTime), sin(uTime), cos(uTime));
+    int my_time = int(uTime) % 10;
+    
+    float set_scale = 512 / vec2(imageSize(output_image)).x ;
+    float scale = set_scale * (2 / float(my_time));
+
+    if(int(my_time) == 1){
+        vec2 firstCoords = input_center + ((gl_GlobalInvocationID.xy - center)* vec2(set_scale) );
+        duck = imageLoad(input_image, ivec2(firstCoords));
+    }
+    if(int(my_time) > 2){
+        vec2 rotatedCoords = input_center + rotationMatrix * ((gl_GlobalInvocationID.xy - center)* vec2(scale) );
+        duck = imageLoad(input_image, ivec2(rotatedCoords));
+    }
+
+    vec2 coord = vec2(gl_GlobalInvocationID.xy);
+    vec3 color = vec3(0.0);
+    float grain = 0.0;
+    grain = random2d(vec2(sin(coord)) * uTime);
+
+    color = grain + duck.rgb;
+
+    imageStore(output_image, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1.0));
+
+}
+

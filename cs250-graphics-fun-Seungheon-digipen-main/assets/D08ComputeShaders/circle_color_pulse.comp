@@ -1,0 +1,26 @@
+#version 430 core
+/**
+ * \file circle_color_pulse.comp
+ * \author Seungheon Jeon
+ * \date 2024 Spring
+ * \par CS250 Computer Graphics II
+ * \copyright DigiPen Institute of Technology
+ */
+
+layout (local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
+layout(binding = 0, rgba8) uniform image2D output_image;
+uniform float uTime;
+
+void main()
+{
+    vec2 coord = vec2(gl_GlobalInvocationID.xy) / imageSize(output_image);
+    vec3 color = vec3(0.0);
+    vec2 translate = vec2(-0.5);
+    coord += translate;
+
+    color.r += abs(0.1 + length(coord) - 0.6 * abs(sin(uTime * 0.9 / 12.0)));
+    color.g += abs(0.1 + length(coord) - 0.6 * abs(sin(uTime * 0.6 / 4.0)));
+    color.b += abs(0.1 + length(coord) - 0.6 * abs(sin(uTime * 0.3 / 9.0)));
+
+    imageStore(output_image, ivec2(gl_GlobalInvocationID.xy), vec4(0.1 / color.rgb, 1.0));
+}

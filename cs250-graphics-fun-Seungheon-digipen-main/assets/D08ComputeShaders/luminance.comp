@@ -1,0 +1,28 @@
+#version 430 core
+/**
+ * \file luminance.comp
+ * \author Seungheon Jeon
+ * \date 2024 Spring
+ * \par CS250 Computer Graphics II
+ * \copyright DigiPen Institute of Technology
+ */
+layout(binding = 0, rgba8) uniform image2D output_image;
+layout(binding = 1, rgba8) uniform image2D input_image;
+layout (local_size_x = 4, local_size_y = 8, local_size_z = 1) in;
+shared vec4 scanline[32];
+
+void main()
+{
+    ivec2 inputSize = imageSize(input_image);
+    ivec2 outputSize = imageSize(output_image);
+
+    ivec2 pos       = ivec2((vec2(gl_GlobalInvocationID.xy) * vec2(inputSize)) / vec2(outputSize));
+    
+    uint index = gl_LocalInvocationIndex;
+    scanline[index] = imageLoad(input_image, pos);
+    float com = sqrt(0.299 * scanline[index].r * scanline[index].r + 0.587 * scanline[index].g * scanline[index].g + 0.114 * scanline[index].b * scanline[index].b);
+    scanline[index] = vec4(vec3(com), 1.0);
+    barrier();
+
+    imageStore(output_image, ivec2(gl_GlobalInvocationID.xy), scanline[index]);
+}
