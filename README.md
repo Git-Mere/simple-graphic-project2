@@ -5,6 +5,13 @@ An OpenGL demo collection exploring real-time rendering techniques in C++.
 
 ![C++](https://img.shields.io/badge/language-C%2B%2B-blue) ![OpenGL](https://img.shields.io/badge/graphics-OpenGL-orange)
 
+## Highlights
+
+- 10 OpenGL demos behind one interface, using all 6 programmable shader stages across 69 GLSL files
+- Two-pass shadow mapping with runtime controls for bias, culling, map size, and depth precision
+- 9 tessellation pipelines and compute-shader image kernels writing 256 to 4096 px textures
+- Shader and texture hot reload that keeps the last working program when a new one fails to compile
+
 ## Features
 
 - **Fog** — linear, exponential, and fragment-depth variants implemented in GLSL
